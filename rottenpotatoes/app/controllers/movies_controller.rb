@@ -10,14 +10,15 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def show_directors
-      @movie = Movie.find(params[:id])
-      if @movie.director.blank?
-        flash[:notice] = "'#{@movie.title}' has no director info"
-        redirect_to movies_path
-      else
-        @movies = Movie.where(director: @movie.director)
-      end
+  def similar
+    movie = Movie.find(params[:movie_id])
+
+    @similar_movies = Movie
+                        .where('id != ? AND director = ?', params[:movie_id], movie.director)
+    if(@similar_movies.empty?)
+      flash[:warning] = ("'#{movie.title}' has no director info")
+      redirect_to '/movies'
+    end
   end
 
   def index
